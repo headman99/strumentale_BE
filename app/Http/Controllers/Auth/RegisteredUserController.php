@@ -38,4 +38,10 @@ class RegisteredUserController extends Controller
 
         return response()->noContent();
     }
+
+
+    public function csrfToken()
+    {
+        return response(['token' => csrf_token()]);
+    }
 }
