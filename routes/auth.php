@@ -35,5 +35,6 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->middleware('auth')
                 ->name('logout');
-Route::get("/csrfToken", [[RegisteredUserController::class, 'csrfToken']])
+//cancellare
+Route::get("/csrfToken", [RegisteredUserController::class, 'csrfToken'])
                 ->name("csrfToken");
