@@ -193,7 +193,7 @@ return [
     | will set this value to "lax" since this is a secure default value.
     |
     | Supported: "lax", "strict", "none", null
-    |
+    |x
     */
 
     'same_site' => 'lax',
