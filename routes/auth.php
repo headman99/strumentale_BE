@@ -38,3 +38,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 //cancellare
 Route::get("/csrfToken", [RegisteredUserController::class, 'csrfToken'])
                 ->name("csrfToken");
+
+Route::middleware(['auth'])->get('/user', function (Request $request) {
+            return $request->user();
+});
