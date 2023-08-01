@@ -196,6 +196,7 @@ return [
     |
     */
 
-    'same_site' => 'lax',
+    #Change to lax to ensure the request comes from the same domain in production
+    'same_site' => 'none',
 
 ];
