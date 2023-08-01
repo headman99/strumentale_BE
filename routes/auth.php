@@ -43,3 +43,6 @@ Route::get("/csrfToken", [RegisteredUserController::class, 'csrfToken'])
 Route::middleware(['auth'])->get('/user', function (Request $request) {
             return $request->user();
 });
+Route::middleware(['auth'])->get('/ciao', function (Request $request) {
+    return 'ciao';
+});
