@@ -36,13 +36,9 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->middleware('auth')
                 ->name('logout');
-//cancellare
-Route::get("/csrfToken", [RegisteredUserController::class, 'csrfToken'])
-                ->name("csrfToken");
 
-Route::middleware(['auth'])->get('/user', function (Request $request) {
-            return $request->user();
-});
-Route::middleware(['auth'])->get('/ciao', function (Request $request) {
-    return 'ciao';
-});
+Route::post('/tokens/create', function (Request $request) {
+    $token = $request->user()->createToken($request->token_name);
+ 
+    return ['token' => $token->plainTextToken];
+})->middleware('auth');

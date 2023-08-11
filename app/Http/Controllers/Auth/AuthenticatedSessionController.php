@@ -7,21 +7,23 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request)#: Response
+    public function store(LoginRequest $request) #: Response
     {
         $request->authenticate();
 
         $request->session()->regenerate();
-        $accessToken = $request->user()->createToken('authToken');
+        Cookie::queue('loggedin', 'True', 262800);
+        $accessToken = $request->user()->createToken('authToken', expiresAt: now()->addDay())->plainTextToken;
 
         #return response()->noContent();
-        return response(["user" => $request->user(), "token" => $accessToken->plainTextToken]);
+        return response(["token" => $accessToken]);
     }
 
     /**
@@ -29,12 +31,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): Response
     {
-        Auth::guard('web')->logout();
-
+        Cookie::queue(Cookie::forget('loggedin'));
+        $request->user()->tokens()->delete();
         $request->session()->invalidate();
-
+        Auth::guard('web')->logout();
         $request->session()->regenerateToken();
-
         return response()->noContent();
     }
 }
