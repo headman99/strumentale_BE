@@ -19,7 +19,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        Cookie::queue('loggedin', 'True', 262800);
+        Cookie::queue('loggedin', 'True', 60*24*365*10, null, null, null, true, false, 'None');
         $accessToken = $request->user()->createToken('authToken', expiresAt: now()->addDay())->plainTextToken;
 
         #return response()->noContent();
@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): Response
     {
-        Cookie::queue(Cookie::forget('loggedin'));
+        Cookie::queue(Cookie::forget('laravel_session'));
         $request->user()->tokens()->delete();
         $request->session()->invalidate();
         Auth::guard('web')->logout();

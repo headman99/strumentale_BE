@@ -196,7 +196,7 @@ return [
     |
     */
 
-    #Change to lax to ensure the frontend and backend share the same domain.
+    //Change to lax to ensure the frontend and backend share the same domain.
     'same_site' => 'none',
 
 ];
