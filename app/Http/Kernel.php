@@ -46,8 +46,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Fruitcake\Cors\HandleCors::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
+            
         ],
     ];
 
