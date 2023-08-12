@@ -19,7 +19,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        Cookie::queue('loggedin', 'True', 60*24*365*10, null, null, null, true, false, 'None');
+        Cookie::queue('loggedin', 'True', 60*24*365*10,);
         $accessToken = $request->user()->createToken('authToken', expiresAt: now()->addDay())->plainTextToken;
 
         #return response()->noContent();
