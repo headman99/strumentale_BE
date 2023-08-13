@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -104,17 +105,17 @@ class UserController extends Controller
 
         try {
             if (!$request->id && !$request->survey)
-                throw "Parametri API non validi, passarne almeno uno";
+                throw ValidationException::withMessages(['error' => 'Parametri non validi']);
 
             if ($request->id) {
                 $item = Item::find($request->id);
                 if (!$item)
-                    throw "Parametri non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
                 $user = Survey::find($item->survey)->user;
                 if ($user == $request->user()->id)
                     $item->delete();
                 else
-                    throw  "Parametri non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             }
 
 
@@ -123,7 +124,7 @@ class UserController extends Controller
                 if ($user == $request->user()->id)
                     Item::where("survey", $request->survey)->delete();
                 else
-                    throw  "Parametri non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             }
 
             return response()->noContent();
@@ -133,7 +134,7 @@ class UserController extends Controller
         }
     }
 
-    public function get_item(Request $request, string $id=null): JsonResponse
+    public function get_item(Request $request, string $id = null): JsonResponse
     {
         $validate = $request->validate([
             "survey" => ["integer", "nullable", "sometimes"]
@@ -146,7 +147,7 @@ class UserController extends Controller
                 if ($user == $request->user()->id)
                     return response()->json(Item::where("survey", $request->survey)->limit(150)->orderBy("created_at", "desc")->get());
                 else
-                    throw "Parametri API non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             }
 
             if ($id) {
@@ -155,15 +156,15 @@ class UserController extends Controller
                     return response()->json(null);
                 $user = Survey::find($item->id)->user;
                 if (!($user == $request->user()->id))
-                    throw "Parametri API non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
                 return response()->json($item);
             }
 
             $items = DB::table("item")
-                        ->join('survey','survey.id','=',"item.id")
-                        ->select("item.*")
-                        ->where("survey.user", '=', $request->user()->id)
-                        ->get();
+                ->join('survey', 'survey.id', '=', "item.id")
+                ->select("item.*")
+                ->where("survey.user", '=', $request->user()->id)
+                ->get();
 
             return response()->json($items);
         } catch (\Exception $exc) {
@@ -198,17 +199,17 @@ class UserController extends Controller
 
         try {
             if (!$request->id && !$request->item)
-                throw "Parametri API non validi, passarne almeno uno";
+                throw ValidationException::withMessages(['error' => 'Parametri non validi']);
 
             if ($request->id) {
                 $result = Result::find($request->id);
                 if (!$result)
-                    throw "Parametri API non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
                 $user = Survey::find(Item::find($result->item)->survey)->user;
                 if ($user == $request->user()->id)
                     $result->delete();
                 else
-                    throw  "Parametri non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             }
 
 
@@ -217,7 +218,7 @@ class UserController extends Controller
                 if ($user == $request->user()->id)
                     Result::where("item", $request->item)->delete();
                 else
-                    throw  "Parametri non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             }
 
             return response()->noContent();
@@ -227,7 +228,7 @@ class UserController extends Controller
         }
     }
 
-    public function get_result(Request $request,string $id = null): JsonResponse
+    public function get_result(Request $request, string $id = null): JsonResponse
     {
         $validate = $request->validate([
             //"id" => ["integer", "nullable", "sometimes"],
@@ -238,7 +239,7 @@ class UserController extends Controller
 
         try {
             if (!$id && !$request->item)
-                throw "Parametri API non validi, passarne almeno uno";
+                throw ValidationException::withMessages(['error' => 'Parametri non validi']);
 
             if ($request->item) {
                 $user = Survey::find(Item::find($request->item)->survey)->user;
@@ -250,7 +251,7 @@ class UserController extends Controller
 
                     return response()->json(Result::where("item", $request->item)->limit(150)->orderBy("created_at", "desc")->get());
                 } else
-                    throw "Parametri API non validi";
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             }
 
             $result = Result::find($id);
@@ -258,7 +259,7 @@ class UserController extends Controller
                 return response()->json(null);
             $user = Survey::find(Item::find($result->item)->survey)->user;
             if (!($user == $request->user()->id))
-                throw "Parametri API non validi";
+                throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             return response()->json($result);
         } catch (\Exception $exc) {
             Log::error($exc->getMessage());
