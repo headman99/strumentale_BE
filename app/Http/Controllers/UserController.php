@@ -133,7 +133,7 @@ class UserController extends Controller
         }
     }
 
-    public function get_item(Request $request, string $id): JsonResponse
+    public function get_item(Request $request, string $id=null): JsonResponse
     {
         $validate = $request->validate([
             "survey" => ["integer", "nullable", "sometimes"]
@@ -227,17 +227,17 @@ class UserController extends Controller
         }
     }
 
-    public function get_result(Request $request): JsonResponse
+    public function get_result(Request $request,string $id = null): JsonResponse
     {
         $validate = $request->validate([
-            "id" => ["integer", "nullable", "sometimes"],
+            //"id" => ["integer", "nullable", "sometimes"],
             "item" => ["integer", "nullable", "sometimes"],
             "latest" => ["boolean", 'nullable', "sometimes"],
             "cheapest" => ["boolean", "nullable", "sometimes"]
         ]);
 
         try {
-            if (!$request->id && !$request->item)
+            if (!$id && !$request->item)
                 throw "Parametri API non validi, passarne almeno uno";
 
             if ($request->item) {
@@ -253,7 +253,7 @@ class UserController extends Controller
                     throw "Parametri API non validi";
             }
 
-            $result = Result::find($request->id);
+            $result = Result::find($id);
             if (!$result)
                 return response()->json(null);
             $user = Survey::find(Item::find($result->item)->survey)->user;
