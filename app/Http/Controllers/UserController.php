@@ -8,6 +8,7 @@ use App\Models\Survey;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
@@ -36,13 +37,12 @@ class UserController extends Controller
     public function delete_survey(Request $request): Response
     {
         $validate = $request->validate([
-            "id" => ["required", "integer"],
-            "all" => ["boolean", "nullable", "sometimes"]
+            "id" => ["sometimes", "integer"],
         ]);
 
         try {
-            if ($request->all) {
-                Survey::where("user" . $request->user()->id)->delete;
+            if (!$request->id) {
+                Survey::where("user" . $request->user()->id)->delete();
                 return response()->noContent();
             }
 
@@ -108,7 +108,7 @@ class UserController extends Controller
 
             if ($request->id) {
                 $item = Item::find($request->id);
-                if(!$item)
+                if (!$item)
                     throw "Parametri non validi";
                 $user = Survey::find($item->survey)->user;
                 if ($user == $request->user()->id)
@@ -133,16 +133,13 @@ class UserController extends Controller
         }
     }
 
-    public function get_item(Request $request): JsonResponse
+    public function get_item(Request $request, string $id): JsonResponse
     {
         $validate = $request->validate([
-            "id" => ["integer", "nullable", "sometimes"],
             "survey" => ["integer", "nullable", "sometimes"]
         ]);
 
         try {
-            if (!$request->id && !$request->survey)
-                throw "Parametri API non validi, passarne almeno uno";
 
             if ($request->survey) {
                 $user = Survey::find($request->survey)->user;
@@ -152,13 +149,23 @@ class UserController extends Controller
                     throw "Parametri API non validi";
             }
 
-            $item = Item::find($request->id);
-            if (!$item)
-                return response()->json(null);
-            $user = Survey::find($item->id)->user;
-            if (!($user == $request->user()->id))
-                throw "Parametri API non validi";
-            return response()->json($item);
+            if ($id) {
+                $item = Item::find($request->id);
+                if (!$item)
+                    return response()->json(null);
+                $user = Survey::find($item->id)->user;
+                if (!($user == $request->user()->id))
+                    throw "Parametri API non validi";
+                return response()->json($item);
+            }
+
+            $items = DB::table("item")
+                        ->join('survey','survey.id','=',"item.id")
+                        ->select("item.*")
+                        ->where("survey.user", '=', $request->user()->id)
+                        ->get();
+
+            return response()->json($items);
         } catch (\Exception $exc) {
             Log::error($exc->getMessage());
             return response(['message' => "Qualcosa è andato storto, riprova", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
@@ -195,7 +202,7 @@ class UserController extends Controller
 
             if ($request->id) {
                 $result = Result::find($request->id);
-                if(!$result)
+                if (!$result)
                     throw "Parametri API non validi";
                 $user = Survey::find(Item::find($result->item)->survey)->user;
                 if ($user == $request->user()->id)
@@ -235,14 +242,14 @@ class UserController extends Controller
 
             if ($request->item) {
                 $user = Survey::find(Item::find($request->item)->survey)->user;
-                if ($user == $request->user()->id){
-                    if($request->latest)
+                if ($user == $request->user()->id) {
+                    if ($request->latest)
                         return response()->json(Result::where("item", $request->item)->orderBy("created_at", "desc")->first());
-                    if($request->cheapest)
+                    if ($request->cheapest)
                         return response()->json(Result::where("item", $request->item)->orderBy("price", "asc")->first());
-                    
+
                     return response()->json(Result::where("item", $request->item)->limit(150)->orderBy("created_at", "desc")->get());
-               } else
+                } else
                     throw "Parametri API non validi";
             }
 
@@ -258,5 +265,4 @@ class UserController extends Controller
             return response(['message' => "Qualcosa è andato storto, riprova", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
         }
     }
-
 }
