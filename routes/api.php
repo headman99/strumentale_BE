@@ -41,6 +41,6 @@ Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
 
     Route::post('/result/get', [UserController::class, 'get_result']);
 
-    Route::post('/result/delete', [UserController::class, 'delete_result_by_item']);
+    Route::post('/result/delete', [UserController::class, 'delete_result']);
 
 });
