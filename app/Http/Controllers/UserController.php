@@ -142,14 +142,6 @@ class UserController extends Controller
 
         try {
 
-            if ($request->survey) {
-                $user = Survey::find($request->survey)->user;
-                if ($user == $request->user()->id)
-                    return response()->json(Item::where("survey", $request->survey)->limit(150)->orderBy("created_at", "desc")->get());
-                else
-                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
-            }
-
             if ($id) {
                 $item = Item::find($request->id);
                 if (!$item)
@@ -158,6 +150,14 @@ class UserController extends Controller
                 if (!($user == $request->user()->id))
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
                 return response()->json($item);
+            }
+
+            if ($request->survey) {
+                $user = Survey::find($request->survey)->user;
+                if ($user == $request->user()->id)
+                    return response()->json(Item::where("survey", $request->survey)->limit(150)->orderBy("created_at", "desc")->get());
+                else
+                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             }
 
             $items = DB::table("item")
@@ -176,7 +176,7 @@ class UserController extends Controller
     public function save_result(Request $request): Response
     {
         $validate = $request->validate([
-            'item' => ["required", "string", "max:200"],
+            'item' => ["required", "integer"],
             'price' => ["required", "integer"],
             'url' => ["required", "string"]
         ]);
