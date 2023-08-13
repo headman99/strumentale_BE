@@ -25,22 +25,22 @@ Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
         return $request->user();
     });
 
-    Route::post('/survey', [UserController::class, 'get_survey']);
+    Route::post('/survey/get', [UserController::class, 'get_survey']);
 
-    Route::post('/save_survey', [UserController::class, 'save_survey']);
+    Route::post('/survey/save', [UserController::class, 'save_survey']);
 
-    Route::post('/delete_survey', [UserController::class, 'delete_survey']);
+    Route::post('/survey/delete', [UserController::class, 'delete_survey']);
 
-    Route::post('/survey/save_item', [UserController::class, 'save_item']);
+    Route::post('/item/save', [UserController::class, 'save_item']);
 
-    Route::post('/survey/delete_item', [UserController::class, 'delete_item']);
+    Route::post('/item/delete', [UserController::class, 'delete_item']);
 
-    Route::post('/survey/item', [UserController::class, 'get_item']);
+    Route::post('/item/get', [UserController::class, 'get_item']);
 
-    Route::post('/item/save_result', [UserController::class, 'save_result']);
+    Route::post('/result/save', [UserController::class, 'save_result']);
 
-    Route::post('/item/result', [UserController::class, 'get_result']);
+    Route::post('/result/get', [UserController::class, 'get_result']);
 
-    Route::post('/item/delete_result', [UserController::class, 'delete_result_by_item']);
+    Route::post('/result/delete', [UserController::class, 'delete_result_by_item']);
 
 });
