@@ -54,18 +54,18 @@ class UserController extends Controller
         }
     }
 
-    public function get_survey(Request $request): JsonResponse
+    public function get_survey(Request $request, string $id = null): JsonResponse
     {
-        $validate = $request->validate([
+        /*$validate = $request->validate([
             "id" => ["integer", "sometimes", "nullable"],
-        ]);
+        ]);*/
 
         try {
-            if ($request->id) {
+            if ($id) {
                 return response()->json(Survey::where(
                     [
                         ["user", $request->user()->id],
-                        ["id", $request->id]
+                        ["id", $id]
                     ]
                 )->first());
             }

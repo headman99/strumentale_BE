@@ -25,7 +25,7 @@ Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
         return $request->user();
     });
 
-    Route::post('/survey/get', [UserController::class, 'get_survey']);
+    Route::get('/survey/get/{id?}', [UserController::class, 'get_survey']);
 
     Route::post('/survey/save', [UserController::class, 'save_survey']);
 
