@@ -78,7 +78,7 @@ class UserController extends Controller
         }
     }
 
-
+    /* ITEM TABLE REMOVED
     public function save_item(Request $request): Response
     {
         $validate = $request->validate([
@@ -172,11 +172,14 @@ class UserController extends Controller
             return response(['message' => "Qualcosa è andato storto, riprova", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
         }
     }
+    */
 
     public function save_result(Request $request): Response
     {
         $validate = $request->validate([
-            'item' => ["required", "integer"],
+            //'item' => ["required", "integer"],
+            'name' => ["nullable","sometimes", "string", 'max:250'],
+            'survey' => ["required", "integer"],
             'price' => ["required", "integer"],
             'url' => ["required", "string"]
         ]);
@@ -194,31 +197,30 @@ class UserController extends Controller
     {
         $validate = $request->validate([
             "id" => ["integer", "nullable", "sometimes"],
-            "item" => ["integer", "nullable", "sometimes"]
+            "survey" => ["integer", "nullable", "sometimes"]
+            //"item" => ["integer", "nullable", "sometimes"]
         ]);
 
         try {
-            if (!$request->id && !$request->item)
+            if (!$request->id && !$request->survey)
                 throw ValidationException::withMessages(['error' => 'Parametri non validi']);
 
             if ($request->id) {
                 $result = Result::find($request->id);
                 if (!$result)
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
-                $user = Survey::find(Item::find($result->item)->survey)->user;
-                if ($user == $request->user()->id)
-                    $result->delete();
-                else
+                $user = Survey::find($result->survey)->user;
+                if ($user != $request->user()->id)
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
+                $result->delete();
             }
 
 
-            if ($request->item) {
-                $user = Survey::find(Item::find($request->item)->survey)->user;
-                if ($user == $request->user()->id)
-                    Result::where("item", $request->item)->delete();
-                else
+            if ($request->survey) {
+                $user = Survey::find($request->survey)->user;
+                if ($user != $request->user()->id)
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
+                Result::where("survey", $request->survey)->delete();
             }
 
             return response()->noContent();
@@ -232,34 +234,27 @@ class UserController extends Controller
     {
         $validate = $request->validate([
             //"id" => ["integer", "nullable", "sometimes"],
-            "item" => ["integer", "nullable", "sometimes"],
+            //"item" => ["integer", "nullable", "sometimes"],
+            "survey" => ["integer", "nullable", "sometimes"],
             "latest" => ["boolean", 'nullable', "sometimes"],
             "cheapest" => ["boolean", "nullable", "sometimes"]
         ]);
 
         try {
-            if (!$id && !$request->item)
+
+            if (!$id && !$request->survey)
                 throw ValidationException::withMessages(['error' => 'Parametri non validi']);
-
-            if ($request->item) {
-                $user = Survey::find(Item::find($request->item)->survey)->user;
-                if ($user == $request->user()->id) {
-                    if ($request->latest)
-                        return response()->json(Result::where("item", $request->item)->orderBy("created_at", "desc")->first());
-                    if ($request->cheapest)
-                        return response()->json(Result::where("item", $request->item)->orderBy("price", "asc")->first());
-
-                    return response()->json(Result::where("item", $request->item)->limit(150)->orderBy("created_at", "desc")->get());
-                } else
+            if ($id) {
+                $result = Result::find($id);
+                if (!(Survey::find($result->id)->user == $request->user()->id))
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
+                return response()->json($result);
             }
 
-            $result = Result::find($id);
-            if (!$result)
-                return response()->json(null);
-            $user = Survey::find(Item::find($result->item)->survey)->user;
+            $user = Survey::find($request->survey)->user;
             if (!($user == $request->user()->id))
                 throw ValidationException::withMessages(['error' => 'Parametri non validi']);
+            $result = Result::where("survey", $request->survey)->get();
             return response()->json($result);
         } catch (\Exception $exc) {
             Log::error($exc->getMessage());

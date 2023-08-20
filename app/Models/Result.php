@@ -12,7 +12,8 @@ class Result extends Model
     protected $table = 'result';
 
     protected $fillable = [
-        'item',
+        'name',
+        'survey',
         "price",
         "url"
     ];
