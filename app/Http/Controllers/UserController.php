@@ -78,6 +78,22 @@ class UserController extends Controller
         }
     }
 
+    public function update_survey(Request $request, string $id = null)
+    {
+        $validate = $request->validate([
+            "id" => ["integer", "sometimes", "required"], 
+            "title" => ["string","max:100"]
+        ]);
+
+        try {
+            Survey::find($request->id)->update(['title'=> $request->title]);
+            return response()->noContent();
+        } catch (\Exception $exc) {
+            Log::error($exc->getMessage());
+            return response(['message' => "Qualcosa è andato storto, riprova", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
+        }
+    }
+
     /* ITEM TABLE REMOVED
     public function save_item(Request $request): Response
     {
@@ -178,7 +194,7 @@ class UserController extends Controller
     {
         $validate = $request->validate([
             //'item' => ["required", "integer"],
-            'name' => ["nullable","sometimes", "string", 'max:250'],
+            'name' => ["nullable", "sometimes", "string", 'max:250'],
             'survey' => ["required", "integer"],
             'price' => ["required", "integer"],
             'url' => ["required", "string"]
@@ -254,6 +270,10 @@ class UserController extends Controller
             $user = Survey::find($request->survey)->user;
             if (!($user == $request->user()->id))
                 throw ValidationException::withMessages(['error' => 'Parametri non validi']);
+            if ($request->latest)
+                //complete
+            if ($request->cheapest)
+                //complete
             $result = Result::where("survey", $request->survey)->get();
             return response()->json($result);
         } catch (\Exception $exc) {

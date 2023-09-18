@@ -31,6 +31,8 @@ Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
 
     Route::post('/survey/delete', [UserController::class, 'delete_survey']);
 
+    Route::post('/survey/update', [UserController::class, 'update_survey']);
+
     //Route::post('/item/save', [UserController::class, 'save_item']);
 
     //Route::post('/item/delete', [UserController::class, 'delete_item']);
@@ -42,5 +44,7 @@ Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
     Route::post('/result/get/{id?}', [UserController::class, 'get_result']);
 
     Route::post('/result/delete', [UserController::class, 'delete_result']);
+
+
 
 });
