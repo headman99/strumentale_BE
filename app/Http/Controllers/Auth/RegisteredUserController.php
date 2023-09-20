@@ -34,7 +34,7 @@ class RegisteredUserController extends Controller
             'api_token' => Str::random(60)
         ]);
 
-        event(new Registered($user));
+        //event(new Registered($user));
 
         //Auth::login($user);
 
