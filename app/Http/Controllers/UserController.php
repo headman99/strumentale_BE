@@ -22,6 +22,12 @@ class UserController extends Controller
         ]);
 
         try {
+
+            //Count how many survey there are for a certain user
+            $counts =  Survey::where("user", $request->user()->id)->count();
+            if($counts >=20)
+                throw ValidationException::withMessages(['error' => 'Non puoi creare più di 20 ricerche.']);
+
             Survey::create(array_merge(
                 $validate,
                 [
@@ -31,7 +37,7 @@ class UserController extends Controller
             return response()->noContent();
         } catch (\Exception $exc) {
             Log::error($exc->getMessage());
-            return response(['message' => "Qualcosa è andato storto, riprova", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
+            return response(['message' => "Qualcosa è andato storto, riprova", "exception" => "Verifica che la ricerca non esista già tra le Ricerche salvate."], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -70,7 +76,7 @@ class UserController extends Controller
                     ]
                 )->first());
             }
-            $surveys = Survey::where("user", $request->user()->id)->limit(150)->orderBy("created_at", "desc")->get();
+            $surveys = Survey::where("user", $request->user()->id)->limit(20)->orderBy("created_at", "desc")->get();
             return response()->json($surveys);
         } catch (\Exception $exc) {
             Log::error($exc->getMessage());
@@ -94,16 +100,19 @@ class UserController extends Controller
         }
     }
 
-    /* ITEM TABLE REMOVED
+    
     public function save_item(Request $request): Response
     {
         $validate = $request->validate([
-            'name' => ["required", "string", "max:200"],
-            "survey" => ['required', "integer"],
+            "name" => ["required","string"],
+            "url" => ["required","string"]
         ]);
 
         try {
-            Item::create($validate);
+            Item::create(array_merge(
+                $validate,
+                ["user" => $request->user()->id]
+            ));
             return response()->noContent();
         } catch (\Exception $exc) {
             Log::error($exc->getMessage());
@@ -115,30 +124,19 @@ class UserController extends Controller
     public function delete_item(Request $request): Response
     {
         $validate = $request->validate([
-            "id" => ["integer", "nullable", "sometimes"],
-            "survey" => ["integer", "nullable", "sometimes"]
+            "id" => ["integer", "nullable", "sometimes"]
         ]);
 
         try {
-            if (!$request->id && !$request->survey)
-                throw ValidationException::withMessages(['error' => 'Parametri non validi']);
+            if (!$request->id) 
+                Item::where("user", $request->user()->id)->delete();
 
             if ($request->id) {
                 $item = Item::find($request->id);
                 if (!$item)
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
-                $user = Survey::find($item->survey)->user;
-                if ($user == $request->user()->id)
+                if ($item->user == $request->user()->id)
                     $item->delete();
-                else
-                    throw ValidationException::withMessages(['error' => 'Parametri non validi']);
-            }
-
-
-            if ($request->survey) {
-                $user = Survey::find($request->survey)->user;
-                if ($user == $request->user()->id)
-                    Item::where("survey", $request->survey)->delete();
                 else
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
             }
@@ -152,35 +150,19 @@ class UserController extends Controller
 
     public function get_item(Request $request, string $id = null): JsonResponse
     {
-        $validate = $request->validate([
-            "survey" => ["integer", "nullable", "sometimes"]
-        ]);
-
         try {
-
+            $items = null;
             if ($id) {
                 $item = Item::find($request->id);
                 if (!$item)
-                    return response()->json(null);
-                $user = Survey::find($item->id)->user;
-                if (!($user == $request->user()->id))
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
-                return response()->json($item);
-            }
-
-            if ($request->survey) {
-                $user = Survey::find($request->survey)->user;
-                if ($user == $request->user()->id)
-                    return response()->json(Item::where("survey", $request->survey)->limit(150)->orderBy("created_at", "desc")->get());
-                else
+                
+                if (!$item->user == $request->user()->id)
                     throw ValidationException::withMessages(['error' => 'Parametri non validi']);
+                $items = $item;
+            }else{
+                $items = Item::where("user",$request->user()->id)->get();
             }
-
-            $items = DB::table("item")
-                ->join('survey', 'survey.id', '=', "item.id")
-                ->select("item.*")
-                ->where("survey.user", '=', $request->user()->id)
-                ->get();
 
             return response()->json($items);
         } catch (\Exception $exc) {
@@ -188,13 +170,13 @@ class UserController extends Controller
             return response(['message' => "Qualcosa è andato storto, riprova", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
         }
     }
-    */
+    
 
     public function save_result(Request $request): Response
     {
         $validate = $request->validate([
             //'item' => ["required", "integer"],
-            'name' => ["nullable", "sometimes", "string", 'max:250'],
+            'name' => ["required", "string", 'max:250'],
             'survey' => ["required", "integer"],
             'price' => ["required", "integer"],
             'url' => ["required", "string"]

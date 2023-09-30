@@ -13,15 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('result', function (Blueprint $table) {
+        Schema::create('item', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId("survey")->constrained("survey")->onDelete("cascade")->onUpdate("cascade");
-            $table->string("name")->max(250);
-            //$table->foreignId("item")->constrained("item")->onDelete("cascade")->onUpdate("cascade"); 
-            $table->integer("price")->unsigned();
+            $table->foreignId("user")->constrained("users")->onDelete("cascade")->onUpdate("cascade");
+            $table->string("name")->max(250)->nullable()->default(NULL);
             $table->string("url");
-            //$table->unique(["survey, item"]);
+            $table->unique(["user","url"]);
         });
     }
 
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('result');
+        Schema::dropIfExists('item');
     }
 };

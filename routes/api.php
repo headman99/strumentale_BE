@@ -33,11 +33,11 @@ Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
 
     Route::post('/survey/update', [UserController::class, 'update_survey']);
 
-    //Route::post('/item/save', [UserController::class, 'save_item']);
+    Route::post('/item/save', [UserController::class, 'save_item']);
 
-    //Route::post('/item/delete', [UserController::class, 'delete_item']);
+    Route::post('/item/delete', [UserController::class, 'delete_item']);
 
-    //Route::post('/item/get/{id?}', [UserController::class, 'get_item']);
+    Route::get('/item/get/{id?}', [UserController::class, 'get_item']);
 
     Route::post('/result/save', [UserController::class, 'save_result']);
 
