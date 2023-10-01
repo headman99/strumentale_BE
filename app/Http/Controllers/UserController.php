@@ -19,15 +19,16 @@ class UserController extends Controller
         $validate = $request->validate([
             'title' => ["nullable", "sometimes", "string", "max:100"],
             "text" => ['required', "string", "max:400"],
+            
         ]);
 
         try {
 
             //Count how many survey there are for a certain user
-            $counts =  Survey::where("user", $request->user()->id)->count();
-            if($counts >=20)
+            $surveys =  Survey::where("user", $request->user()->id)->get();
+            if($surveys->count() >=20)
                 throw ValidationException::withMessages(['error' => 'Non puoi creare più di 20 ricerche.']);
-
+            
             Survey::create(array_merge(
                 $validate,
                 [
@@ -105,7 +106,8 @@ class UserController extends Controller
     {
         $validate = $request->validate([
             "name" => ["required","string"],
-            "url" => ["required","string"]
+            "url" => ["required","string"],
+            "img" => ["sometimes",'nullable']
         ]);
 
         try {

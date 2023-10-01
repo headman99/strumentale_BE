@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId("user")->constrained("users")->onDelete("cascade")->onUpdate("cascade");
             $table->string("name")->max(250)->nullable()->default(NULL);
             $table->string("url");
+            $table->string("img")->nullable();
             $table->unique(["user","url"]);
         });
     }
