@@ -27,7 +27,7 @@ class UserController extends Controller
             //Count how many survey there are for a certain user
             $surveys =  Survey::where("user", $request->user()->id)->get();
             if($surveys->count() >=20)
-                throw ValidationException::withMessages(['error' => 'Non puoi creare più di 20 ricerche.']);
+                throw ValidationException::withMessages(['error' => 'Non puoi salvare più di 20 ricerche.']);
             
             Survey::create(array_merge(
                 $validate,
@@ -111,6 +111,10 @@ class UserController extends Controller
         ]);
 
         try {
+            $items =  Item::where("user", $request->user()->id)->get();
+            if($items->count() >=20)
+                throw ValidationException::withMessages(['error' => 'Non puoi salvare piu di 20 oggetti.']);
+            
             Item::create(array_merge(
                 $validate,
                 ["user" => $request->user()->id]
