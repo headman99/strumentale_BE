@@ -282,7 +282,7 @@ class UserController extends Controller
                 $all_results_count = $all_results->count();
                 $skip = round($all_results_count/$request->samples);
                 $results = $all_results->filter(function ($item, $index) use ($skip,$all_results_count) {
-                    return (($index % ($skip+1)) == 0) || ($index == $all_results_count - 1);
+                    return (($index % ($skip)) == 0) || ($index == $all_results_count - 1);
                 })->values();
             } else {
                 $results = Result::where("survey", $request->survey)->get();
