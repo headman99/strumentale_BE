@@ -6,12 +6,15 @@ use App\Models\Item;
 use App\Models\Result;
 use App\Models\Survey;
 use Carbon\Carbon;
+use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use \Symfony\Component\Panter\Client;
+
 
 class UserController extends Controller
 {
@@ -271,17 +274,18 @@ class UserController extends Controller
             $results = array();
             if ($request->samples) {
                 //default 3 months
-                $n_months = $request->n_months!==null ? $request->n_months : 3;
+                $n_months = $request->n_months !== null ? $request->n_months : 3;
                 $today = Carbon::today();
                 $endDate = Carbon::today()->subMonths($n_months);
                 $all_results = Result::where([
                     ["survey", $request->survey],
                     ["created_at", '<=', $today],
-                    ["created_at",">=", $endDate]
-                ])->orderBy("created_at", 'asc')->select("id","created_at","price")->get();
+                    ["created_at", ">=", $endDate]
+                ])->orderBy("created_at", 'asc')->select("id", "created_at", "price")->get();
                 $all_results_count = $all_results->count();
-                $skip = round($all_results_count/$request->samples);
-                $results = $all_results->filter(function ($item, $index) use ($skip,$all_results_count) {
+                $skip = round($all_results_count / $request->samples);
+                $results = $all_results->filter(function ($item, $index) use ($skip, $all_results_count) {
+
                     return (($index % ($skip)) == 0) || ($index == $all_results_count - 1);
                 })->values();
             } else {
@@ -293,5 +297,20 @@ class UserController extends Controller
             Log::error($exc->getMessage());
             return response(['message' => "Qualcosa è andato storto, riprova", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    public function scrapePage()
+    {
+        /*$client = \Symfony\Component\Panther\Client::createChromeClient();
+        $client->request('GET', 'https://api-platform.com'); // Yes, this website is 100% written in JavaScript
+        $client->clickLink('Getting started');
+
+        // Wait for an element to be present in the DOM (even if hidden)
+        $crawler = $client->waitFor('.doc');
+        // Alternatively, wait for an element to be visible
+        //$crawler = $client->waitForVisibility('#installing-the-framework');
+
+        $text= $crawler->filter('.doc')->text();  */      //$client->takeScreenshot('screen.png'); // Yeah, screenshot!*/
+        return response()->json(__DIR__);
     }
 }

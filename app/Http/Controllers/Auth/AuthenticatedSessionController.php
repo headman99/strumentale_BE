@@ -32,6 +32,7 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): Response
     {
         Cookie::queue(Cookie::forget('laravel_session'));
+        Cookie::queue(Cookie::forget('loggedin'));
         $request->user()->tokens()->delete();
         $request->session()->invalidate();
         Auth::guard('web')->logout();

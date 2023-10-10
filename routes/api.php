@@ -45,6 +45,6 @@ Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
 
     Route::post('/result/delete', [UserController::class, 'delete_result']);
 
-
+    Route::get('/scrape', [UserController::class, 'scrapePage']);
 
 });
