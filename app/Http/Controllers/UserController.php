@@ -301,7 +301,7 @@ class UserController extends Controller
 
     public function scrapePage()
     {
-        $path = str_replace("app/Http/Controllers", 'vendor/bin/drivers/chromedriver.exe',str_replace("\\","/",__DIR__));
+        $path = str_replace("app/Http/Controllers", 'vendor/bin/drivers/chromedriver',str_replace("\\","/",__DIR__));
         $client = \Symfony\Component\Panther\Client::createChromeClient($path);
         $client->request('GET', 'https://api-platform.com'); // Yes, this website is 100% written in JavaScript
         $client->clickLink('Getting started');
