@@ -301,7 +301,8 @@ class UserController extends Controller
 
     public function scrapePage()
     {
-        $client = \Symfony\Component\Panther\Client::createChromeClient('/homepages/27/d943380220/htdocs/be.strumentale.it/strumentale_BE/app/vendor/bin/drivers/chromedriver.exe');
+        $path = str_replace("app/Http/Controllers", 'vendor/bin/drivers/chromedriver.exe',str_replace("\\","/",__DIR__));
+        $client = \Symfony\Component\Panther\Client::createChromeClient($path);
         $client->request('GET', 'https://api-platform.com'); // Yes, this website is 100% written in JavaScript
         $client->clickLink('Getting started');
 
@@ -311,6 +312,6 @@ class UserController extends Controller
         //$crawler = $client->waitForVisibility('#installing-the-framework');
 
         $text= $crawler->filter('.doc')->text();       //$client->takeScreenshot('screen.png'); // Yeah, screenshot!*/
-        return response()->json(__DIR__);
+        return response()->json($text);
     }
 }
