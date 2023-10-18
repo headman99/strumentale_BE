@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\ScraperController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -42,3 +43,5 @@ Route::post('/tokens/create', function (Request $request) {
  
     return ['token' => $token->plainTextToken];
 })->middleware('auth');
+
+Route::get('/save_scrape_result' , [ScraperController::class, 'save_scrape_result'])->middleware("crawler");

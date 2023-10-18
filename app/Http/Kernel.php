@@ -48,6 +48,9 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             
         ],
+        'crawler' => [
+            \App\Http\Middleware\AllowCrawler::class
+        ]
     ];
 
     /**
@@ -68,5 +71,6 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+        'crawler' => \App\Http\Middleware\AllowCrawler::class
     ];
 }

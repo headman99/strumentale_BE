@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ScraperController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,7 +45,5 @@ Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
     Route::post('/result/get/{id?}', [UserController::class, 'get_result']);
 
     Route::post('/result/delete', [UserController::class, 'delete_result']);
-
-    Route::get('/scrape', [UserController::class, 'scrapePage']);
-
 });
+
