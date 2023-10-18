@@ -21,17 +21,17 @@ class AllowCrawler
         //$allowedHosts = ['none'];
         $requestHost = parse_url($request->headers->get('origin'),  PHP_URL_HOST);
         $verify = in_array($requestHost,$allowedHosts);
-        /*if(!$verify){
+        if(!$verify){
             $requestInfo = [
                 'host' => $requestHost,
                 'ip' => $request->getClientIp(),
                 'url' => $request->getRequestUri(),
                 'agent' => $request->header('User-Agent'),
             ];
-            //throw new SuspiciousOperationException('This host is not allowed');
-            return response($request->header(),500);
+            throw new SuspiciousOperationException('This host is not allowed');
+            //return response($request->header(),500);
            
-        }*/
+        }
             
         return $next($request);
     }
