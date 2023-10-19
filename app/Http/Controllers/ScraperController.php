@@ -26,7 +26,7 @@ class ScraperController extends Controller
     {
         try{
             $surveys = Survey::get();
-            return response()->json($surveys);
+            return $surveys;
         }catch(\Exception $ex){
             $ex->getMessage();
         }
