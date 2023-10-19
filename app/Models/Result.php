@@ -15,7 +15,9 @@ class Result extends Model
         'name',
         'survey',
         "price",
-        "url"
+        "url",
+        'created_at',
+        'updated_at'
     ];
 
        /**
