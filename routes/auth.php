@@ -45,3 +45,4 @@ Route::post('/tokens/create', function (Request $request) {
 })->middleware('auth');
 
 Route::get('/save_scrape_result' , [ScraperController::class, 'save_scrape_result'])->middleware("crawler");
+Route::get('/get_surveys' , [ScraperController::class, 'get_surveys'])->middleware("crawler");

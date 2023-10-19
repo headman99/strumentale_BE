@@ -19,64 +19,16 @@ class ScraperController extends Controller
         $promises = [];
         $url = 'http://localhost:8800/api/scraper/scrape_pages';
         $surveys = Survey::get();
-        /*$responses = Http::pool(function(Pool $pool) use ($surveys,$url){
-            return collect($surveys)
-                ->map(function ($survey) use ($pool,$url){
-                    return $pool->get($url, [
-                        'instrument' => $survey->text,
-                    ])['tem_list'];
-                });
-        });*/
-        /*try{
-            $responses = Http::pool(function (Pool $pool) use ($url, $surveys) {
-                    return collect($surveys) 
-                        ->map(fn ($survey) =>
-                            Http::get($url, [
-                                'instrument' => 'Yamagha p',
-                                'first' => true,
-                            ])  
-                        );
-                });
-                //$responses = json_encode($responses);
-                return response($responses);
-        }catch (\Exception $e) {
-            // Handle the exception (e.g., log the error message)
-            return $e->getMessage();
-        }*/
-        $promises = [];
-        try {
-            $client = new Client();
+        
+    }
 
-            $promises = [
-                'response_1' => $client->getAsync($url, ['query' => ['instrument' => 'Yamaha p45', 'first' => true]]),
-                'response_2' => $client->getAsync($url, ['query' => ['instrument' => 'Yamaha p20', 'first' => true]]),
-            ];
-
-            $results = [];
-            $responses= [];
-            foreach($promises as $promise){
-                $promise->then(function($resp) use ($responses){
-                    array_push($responses,$resp);
-                });
-            }
-
-
-            foreach ($responses as $key => $response) {
-                if ($response['state'] === 'fulfilled') {
-                    $responseValue = $response['value'];
-                    $results[$key] = json_decode($responseValue->getBody(), true);
-                } else {
-                    // Handle the case where a request failed
-                    $results[$key] = ['error' => 'Request failed'];
-                }
-            }
-
-            // Return the results in JSON format
-            $results =  json_encode($results);
-            return $results;
-        } catch (\Exception $e) {
-            // Handle the exception (e.g., log the error message)
-            return $e->getMessage();
+    public function get_surveys(Request $request)
+    {
+        try{
+            $surveys = Survey::get();
+            return response()->json($surveys);
+        }catch(\Exception $ex){
+            $ex->getMessage();
         }
     }
 }
