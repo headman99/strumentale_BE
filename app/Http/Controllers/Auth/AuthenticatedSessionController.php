@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -16,14 +17,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request) #: Response
     {
-        $request->authenticate();
+        try {
+            $request->authenticate();
 
-        $request->session()->regenerate();
-        Cookie::queue('loggedin', 'True', 60*24*365*10,);
-        $accessToken = $request->user()->createToken('authToken', expiresAt: now()->addDay())->plainTextToken;
+            $request->session()->regenerate();
+            Cookie::queue('loggedin', 'True', 60 * 24 * 365 * 10,);
+            $accessToken = $request->user()->createToken('authToken', expiresAt: now()->addDay())->plainTextToken;
 
-        #return response()->noContent();
-        return response(["token" => $accessToken]);
+            #return response()->noContent();
+            return response(["status" => true]);
+        } catch (\Exception $exc) {
+            $message = $exc->getMessage();
+            return response(["status" => false, "exception" => $message,"message" => "Credenziali non valide"], \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

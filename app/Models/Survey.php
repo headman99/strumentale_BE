@@ -14,7 +14,10 @@ class Survey extends Model
     protected $fillable = [
         'title',
         'text',
-        "user" 
+        "user" ,
+        "price_range_favorite",
+        "free_shipping_favorite",
+        "rating_favorite"
     ];
 
        /**

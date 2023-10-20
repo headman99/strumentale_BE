@@ -23,6 +23,9 @@ class UserController extends Controller
         $validate = $request->validate([
             'title' => ["nullable", "sometimes", "string", "max:100"],
             "text" => ['required', "string", "max:400"],
+            "price_range_favorite" => ["sometimes","nullable","max:100"],
+            "free_shipping_favorite"=> ["sometimes","nullable","bool"],
+            "rating_favorite"=> ["sometimes","nullable","integer"],
 
         ]);
 
@@ -30,8 +33,8 @@ class UserController extends Controller
 
             //Count how many survey there are for a certain user
             $surveys =  Survey::where("user", $request->user()->id)->get();
-            if ($surveys->count() >= 20)
-                throw ValidationException::withMessages(['error' => 'Non puoi salvare più di 20 ricerche.']);
+            if ($surveys->count() >= 10)
+                throw ValidationException::withMessages(['error' => 'Non puoi salvare più di 10 ricerche.']);
 
             Survey::create(array_merge(
                 $validate,
@@ -297,21 +300,5 @@ class UserController extends Controller
             Log::error($exc->getMessage());
             return response(['message' => "Qualcosa è andato storto, riprova", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
         }
-    }
-
-    public function scrapePage()
-    {
-        $path = str_replace("app/Http/Controllers", 'vendor/bin/drivers/chromedriver',str_replace("\\","/",__DIR__));
-        $client = \Symfony\Component\Panther\Client::createChromeClient($path);
-        $client->request('GET', 'https://api-platform.com'); // Yes, this website is 100% written in JavaScript
-        $client->clickLink('Getting started');
-
-        // Wait for an element to be present in the DOM (even if hidden)
-        $crawler = $client->waitFor('.doc');
-        // Alternatively, wait for an element to be visible
-        //$crawler = $client->waitForVisibility('#installing-the-framework');
-
-        $text= $crawler->filter('.doc')->text();       //$client->takeScreenshot('screen.png'); // Yeah, screenshot!*/
-        return response()->json($text);
     }
 }
