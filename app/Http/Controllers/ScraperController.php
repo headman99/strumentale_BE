@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Result;
 use App\Models\Survey;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\Promise;
@@ -16,10 +17,11 @@ class ScraperController extends Controller
 {
     public function save_scrape_result(Request $request)
     {
-        $promises = [];
-        $url = 'http://localhost:8800/api/scraper/scrape_pages';
-        $surveys = Survey::get();
-        
+        try{
+
+        }catch(\Exception $ex){
+            
+        }
     }
 
     public function get_surveys(Request $request)
@@ -27,6 +29,14 @@ class ScraperController extends Controller
         try{
             $surveys = Survey::get();
             return response($surveys);
+        }catch(\Exception $ex){
+            $ex->getMessage();
+        }
+    }
+
+    public function delete_old_results(Request $request){
+        try{
+            Result::whereDate('created_at','<=',now()->subMonths(3)->delete());
         }catch(\Exception $ex){
             $ex->getMessage();
         }

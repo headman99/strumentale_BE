@@ -48,7 +48,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             
         ],
-        'crawler' => [
+        'node' => [
             \App\Http\Middleware\AllowCrawler::class
         ]
     ];
