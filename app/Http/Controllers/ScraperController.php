@@ -10,6 +10,7 @@ use GuzzleHttp\Promise\Utils;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 
@@ -18,9 +19,10 @@ class ScraperController extends Controller
     public function save_scrape_result(Request $request)
     {
         try{
-
+            //DB::table("survey")->insert($request->data);
+            return response($request->data);
         }catch(\Exception $ex){
-            
+            return response($ex->getMessage());
         }
     }
 
