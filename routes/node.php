@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['middleware' => ['crawler']], function () {
-    Route::get('/save_scrape_result', [ScraperController::class, 'save_scrape_result']);
+    Route::post('/save_scrape_result', [ScraperController::class, 'save_scrape_result']);
 
     Route::get('/get_surveys', [ScraperController::class, 'get_surveys']);
 
