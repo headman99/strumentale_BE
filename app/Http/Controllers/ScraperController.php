@@ -19,8 +19,10 @@ class ScraperController extends Controller
     public function save_scrape_result(Request $request)
     {
         try{
-            //DB::table("survey")->insert($request->data);
-            return response($request->data);
+
+            DB::table("result")->insert($request->data);
+            return response(["status"=>true,"message" => 'everything is great']);
+            //return response($request->data);
         }catch(\Exception $ex){
             return response($ex->getMessage());
         }
