@@ -51,7 +51,7 @@ class ScraperController extends Controller
 
     public function delete_old_results(Request $request){
         try{
-            Result::whereDate('created_at','<=',now()->subMonths(3)->delete());
+            Result::whereDate('created_at','<=',now()->subMonths(3))->delete();
         }catch(\Exception $ex){
             $ex->getMessage();
         }
