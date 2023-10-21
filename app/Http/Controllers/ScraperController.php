@@ -23,10 +23,10 @@ class ScraperController extends Controller
         try{
             $data = array_map(function ($result) {
                 return [
-                    'name' => $result->name,
-                    "survey" =>$result->survey,
-                    "price" => $result->price,
-                    "url" => $result->url,
+                    'name' => $result->data['name'],
+                    "survey" =>$result->data["survey"],
+                    "price" => $result->data["price"],
+                    "url" => $result->data["url"],
                     "created_at"=> Carbon::now(),
                     "updated_at" => Carbon::now()
                 ];
