@@ -114,7 +114,9 @@ class UserController extends Controller
         $validate = $request->validate([
             "name" => ["required", "string"],
             "url" => ["required", "string"],
-            "img" => ["sometimes", 'nullable']
+            "img" => ["sometimes", 'nullable'],
+            "description"=>  ["sometimes", 'nullable','string'],
+            "siteName"=> ["sometimes", 'nullable','string']
         ]);
 
         try {
