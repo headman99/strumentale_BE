@@ -17,7 +17,7 @@ class Item extends Model
         "url",
         "img",
         'siteName',
-        'descrition'
+        'description'
     ];
 
        /**
