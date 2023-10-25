@@ -17,9 +17,9 @@ class AllowCrawler
      */
     public function handle(Request $request, Closure $next)
     {
-       $allowedHosts = ["localhost","crawler.strumentale.it"];
+       $allowedHosts = ["localhost","93.93.117.235"];
         
-        $requestHost = $request->host();
+        $requestHost = $request->ip();
         $verify = in_array($requestHost,$allowedHosts);
         if(!$verify){
             $requestInfo = [
@@ -28,8 +28,8 @@ class AllowCrawler
                 'url' => $request->getRequestUri(),
                 'agent' => $request->header('User-Agent'),
             ];
-            throw new SuspiciousOperationException('This host is not allowed');
-            //return response($requestInfo,500);
+            //throw new SuspiciousOperationException('This host is not allowed');
+            return response($requestInfo,500);
            
         }
             
