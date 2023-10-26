@@ -288,6 +288,9 @@ class UserController extends Controller
                     ["created_at", ">=", $endDate]
                 ])->orderBy("created_at", 'asc')->select("id", "created_at", "price")->get();
                 $all_results_count = $all_results->count();
+                if($all_results_count<=$request->samples){
+                    return response()->json($results);
+                }
                 $skip = round($all_results_count / $request->samples);
                 $skip = $skip ==0 ? 1 : $skip;
                 $results = $all_results->filter(function ($item, $index) use ($skip, $all_results_count) {
