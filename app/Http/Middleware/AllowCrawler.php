@@ -28,8 +28,8 @@ class AllowCrawler
                 'url' => $request->getRequestUri(),
                 'agent' => $request->header('User-Agent'),
             ];
-            //throw new SuspiciousOperationException('This host is not allowed');
-            return response($requestInfo,500);
+            throw new SuspiciousOperationException('This host is not allowed');
+            //return response($requestInfo,500);
            
         }
             

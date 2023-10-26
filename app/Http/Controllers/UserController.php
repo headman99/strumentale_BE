@@ -289,8 +289,8 @@ class UserController extends Controller
                 ])->orderBy("created_at", 'asc')->select("id", "created_at", "price")->get();
                 $all_results_count = $all_results->count();
                 $skip = round($all_results_count / $request->samples);
+                $skip = $skip ==0 ? 1 : $skip;
                 $results = $all_results->filter(function ($item, $index) use ($skip, $all_results_count) {
-
                     return (($index % ($skip)) == 0) || ($index == $all_results_count - 1);
                 })->values();
             } else {
