@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
             $accessToken = $request->user()->createToken('authToken', expiresAt: now()->addDay())->plainTextToken;
 
             #return response()->noContent();
-            return response(["status" => true]);
+            return response(["status" => true,  "accessToken" => $accessToken]);
         } catch (\Exception $exc) {
             $message = $exc->getMessage();
             return response(["status" => false, "exception" => $message,"message" => "Credenziali non valide"], \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY);
