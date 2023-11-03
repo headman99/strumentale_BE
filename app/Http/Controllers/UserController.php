@@ -279,20 +279,17 @@ class UserController extends Controller
             $results = array();
             if ($request->samples) {
                 //default 3 months
-                $n_months = $request->n_months !== null ? $request->n_months : 3;
-                $today = Carbon::today();
-                $endDate = Carbon::today()->subMonths($n_months);
-                $all_results = Result::where([
-                    ["survey", $request->survey],
-                    ["created_at", '<=', $today],
-                    ["created_at", ">=", $endDate]
-                ])->orderBy("created_at", 'asc')->select("id", "created_at", "price")->get();
+                $n_months = $request->n_months? $request->n_months : 3;
+                $today = Carbon::now();
+                $endDate = Carbon::now()->subMonths($n_months);
+                $all_results = Result::where("survey", $request->survey)
+                    ->whereBetween('created_at', [$endDate, $today])->orderBy("created_at", 'asc')->select("id", "created_at", "price")->get();
                 $all_results_count = $all_results->count();
                 if($all_results_count<=$request->samples){
                     return response()->json($all_results);
                 }
                 $skip = round($all_results_count / $request->samples);
-                $skip = $skip ==0 ? 1 : $skip;
+                $skip = $skip == 0 ? 1 : $skip;
                 $results = $all_results->filter(function ($item, $index) use ($skip, $all_results_count) {
                     return (($index % ($skip)) == 0) || ($index == $all_results_count - 1);
                 })->values();
