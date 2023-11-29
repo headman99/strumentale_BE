@@ -21,7 +21,8 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): Response
     {
-        $request->validate([
+        try{
+           $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -34,12 +35,12 @@ class RegisteredUserController extends Controller
             'api_token' => Str::random(60)
         ]);
 
-        #to allow login after registration
-        //event(new Registered($user));
-
-        //Auth::login($user);
-
         return response()->noContent();
+
+        }catch (\Exception $exc) {
+            Log::error($exc->getMessage());
+            return response(['message' => "Email già registrata nei nostri sistemi", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
+        }
     }
 
 }
