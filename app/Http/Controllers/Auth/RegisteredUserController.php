@@ -19,7 +19,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): Response
+    public function store(Request $request)
     {
         try{
            $request->validate([
@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
             'api_token' => Str::random(60)
         ]);
 
-        return response()->noContent();
+        return response(["status" => true]);
 
         }catch (\Exception $exc) {
             //Log::error($exc->getMessage());
