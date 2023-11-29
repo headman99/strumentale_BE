@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
 
         }catch (\Exception $exc) {
             //Log::error($exc->getMessage());
-            return response(['message' => "Email già registrata nei nostri sistemi", "exception" => $exc->getMessage()], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
+            return response(['message' => "Email già registrata nei nostri sistemi"], \Illuminate\Http\Response::HTTP_BAD_REQUEST);
         }
     }
 
